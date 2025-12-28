@@ -1,7 +1,8 @@
+// server/api/car/[userId].delete.ts
+
 import { prisma } from "~/server/utils/prisma";
 import { getRouterParams } from "h3";
 import type { H3Event } from "h3";
-import { number, string } from "joi";
 
 type DeleteResponse = {
   success: boolean;

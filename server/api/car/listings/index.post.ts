@@ -42,9 +42,10 @@ const schema = Joi.object({
   description: Joi.string().trim().min(10).max(2000).required().messages({
     "any.required": "توضیحات الزامی است",
   }),
-  image: Joi.string().allow("", null).uri().messages({
-    "string.uri": "آدرس تصویر معتبر نیست",
-  }),
+  image: Joi.string().trim().allow("", null).optional(),
+  // image: Joi.string().allow("", null).uri().messages({
+  //   "string.uri": "آدرس تصویر معتبر نیست",
+  // }),
   listerId: Joi.string().trim().required().messages({
     "any.required": "شناسه فروشنده الزامی است",
   }),

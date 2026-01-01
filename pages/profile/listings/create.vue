@@ -112,7 +112,6 @@ const handleSubmit = async () => {
 };
 </script> -->
 
-
 <script setup>
 definePageMeta({
   layout: "custom",
@@ -121,6 +120,8 @@ definePageMeta({
 
 const { makes } = useCars();
 const user = useSupabaseUser();
+const supabase = useSupabaseClient();
+
 const errorMessage = ref("");
 
 const info = useState("adInfo", () => ({
@@ -133,7 +134,7 @@ const info = useState("adInfo", () => ({
   features: "",
   seats: "",
   description: "",
-  image: "",
+  image: null,
 }));
 
 const onChangeInput = (data, name) => {
@@ -147,7 +148,12 @@ const inputs = [
   { id: 4, title: "Miles *", name: "miles", placeholder: "1000" },
   { id: 5, title: "City *", name: "city", placeholder: "Austin" },
   { id: 6, title: "Number of Seats *", name: "seats", placeholder: "4" },
-  { id: 7, title: "Features *", name: "features", placeholder: "Leather Interior, no accidents" },
+  {
+    id: 7,
+    title: "Features *",
+    name: "features",
+    placeholder: "Leather Interior, no accidents",
+  },
 ];
 
 const isButtonDisabled = computed(() => {
@@ -158,7 +164,11 @@ const isButtonDisabled = computed(() => {
 });
 
 const handleSubmit = async () => {
-  
+  const fileName = Math.floor(Math.random() * 1000000000000000000000000000000);
+  const { data, error } = await supabase.storage
+    .from("images")
+    .upload("public/" + fileName, info.value.image);
+
   if (!user.value) {
     errorMessage.value = "کاربر لاگین نیست – لطفاً دوباره وارد شوید";
     return;
@@ -172,10 +182,12 @@ const handleSubmit = async () => {
     return;
   }
 
-
   const rawFeatures = (info.value.features || "").trim();
   const featuresArray = rawFeatures
-    ? rawFeatures.split(/,\s*/).map(s => s.trim()).filter(Boolean)
+    ? rawFeatures
+        .split(/,\s*/)
+        .map((s) => s.trim())
+        .filter(Boolean)
     : [];
 
   const body = {
@@ -188,17 +200,26 @@ const handleSubmit = async () => {
     numberOfSeats: info.value.seats ? Number(info.value.seats) : null,
     features: featuresArray,
     description: (info.value.description || "").trim(),
-    image: "https://placehold.co/800x600?text=Car+Image", // موقت   
+    image: data.path,
     listerId, // ← اینجا از sub یا id استفاده شد
-    name: [(info.value.make || ""), (info.value.model || "")].filter(Boolean).join(" ").trim() || "",
+    name:
+      [info.value.make || "", info.value.model || ""]
+        .filter(Boolean)
+        .join(" ")
+        .trim() || "",
   };
 
   // دیباگ
   console.log("داده ارسالی به API:", JSON.stringify(body, null, 2));
 
- 
-  if (!body.make || !body.model || isNaN(body.year) || featuresArray.length === 0) {
-    errorMessage.value = "لطفاً فیلدهای ضروری (برند، مدل، سال، ویژگی‌ها) را پر کنید";
+  if (
+    !body.make ||
+    !body.model ||
+    isNaN(body.year) ||
+    featuresArray.length === 0
+  ) {
+    errorMessage.value =
+      "لطفاً فیلدهای ضروری (برند، مدل، سال، ویژگی‌ها) را پر کنید";
     return;
   }
 
@@ -213,9 +234,11 @@ const handleSubmit = async () => {
     console.error("خطای ثبت آگهی:", err);
 
     if (err.data?.errors) {
-      errorMessage.value = err.data.errors.join(" • ") || "داده‌های ارسالی نامعتبر است";
+      errorMessage.value =
+        err.data.errors.join(" • ") || "داده‌های ارسالی نامعتبر است";
     } else {
       errorMessage.value = err.statusMessage || "خطا در ارتباط با سرور";
+      await supabase.storage.from("images").remove(data.path);
     }
   }
 };

@@ -17,14 +17,14 @@ model Car {
   miles         Int
   price         Int
   image         String
-  features      String[]    // ← این باید String[] باشد (آرایه)
+  features      String[] // ← این باید String[] باشد (آرایه)
   description   String
   make          String
   year          Int
   city          String
   model         String
   listerId      String
-  messages      message[]   // پیشنهاد: messages (جمع)
+  messages      message[] // پیشنهاد: messages (جمع)
   // بهتر است اضافه کنید
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -37,5 +37,5 @@ model message {
   phone     String
   email     String
   listingID Int
-  listing   Car    @relation(fields: [listingID], references: [id])
+  listing   Car    @relation(fields: [listingID], references: [id], onDelete: Cascade)
 }

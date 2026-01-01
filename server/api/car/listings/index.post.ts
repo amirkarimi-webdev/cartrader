@@ -1,4 +1,4 @@
-// server/api/car/index.post.js  (یا هر نامی که داری)
+// server/api/car/listings/index.post.ts  (یا هر نامی که داری)
 
 import Joi from "joi";
 
@@ -42,8 +42,7 @@ const schema = Joi.object({
   description: Joi.string().trim().min(10).max(2000).required().messages({
     "any.required": "توضیحات الزامی است",
   }),
-  image: Joi.string().uri().required().messages({
-    "any.required": "آدرس تصویر الزامی است",
+  image: Joi.string().allow("", null).uri().messages({
     "string.uri": "آدرس تصویر معتبر نیست",
   }),
   listerId: Joi.string().trim().required().messages({

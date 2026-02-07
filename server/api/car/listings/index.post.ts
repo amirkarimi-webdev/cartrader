@@ -2,10 +2,10 @@
 
 import Joi from "joi";
 
-// import default برای حل ارور named export در Prisma ۵+ و ۷
+
 import { prisma } from "~/server/utils/prisma";
 
-// validation schema (بهبودیافته + پیام‌های فارسی)
+
 const schema = Joi.object({
   make: Joi.string().trim().min(2).max(50).required().messages({
     "any.required": "برند خودرو الزامی است",
@@ -43,9 +43,7 @@ const schema = Joi.object({
     "any.required": "توضیحات الزامی است",
   }),
   image: Joi.string().trim().allow("", null).optional(),
-  // image: Joi.string().allow("", null).uri().messages({
-  //   "string.uri": "آدرس تصویر معتبر نیست",
-  // }),
+
   listerId: Joi.string().trim().required().messages({
     "any.required": "شناسه فروشنده الزامی است",
   }),
@@ -58,9 +56,6 @@ const schema = Joi.object({
 }).options({ abortEarly: false }); // همه خطاها رو نشون بده
 
 export default defineEventHandler(async (event) => {
-  // اختیاری: چک لاگین (اگر می‌خوای فقط کاربر لاگین‌شده آگهی بذاره)
-  // const user = event.context.user || useSupabaseUser(event)
-  // if (!user) throw createError({ statusCode: 401, message: 'لطفاً وارد شوید' })
 
   const body = await readBody(event);
 

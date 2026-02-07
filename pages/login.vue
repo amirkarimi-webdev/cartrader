@@ -10,7 +10,6 @@ const route = useRoute()  // برای گرفتن redirect از query
 // هر وقت کاربر لاگین شد، اتوماتیک منتقلش کن
 watch(user, (newUser) => {
   if (newUser) {
-    // اگر از middleware اومده بود (مثلاً می‌خواسته بره /profile/listings)
     const redirectPath = (route.query.redirect as string) || '/profile/listings'
     navigateTo(redirectPath)
   }
@@ -20,8 +19,7 @@ const login = async () => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin + '/',  // ← تغییر مهم: به صفحه اصلی برگرده
-      // scopes: 'openid email profile'  // اختیاری اما پیشنهادی
+      redirectTo: window.location.origin + '/', 
     }
   })
 
@@ -44,7 +42,6 @@ const login = async () => {
       </NuxtLink>
     </div>
 
-    <!-- اگر لاگین نکرده باشه -->
     <div v-else>
       <h1 class="text-5xl font-bold mb-10">ورود به حساب</h1>
       <button

@@ -17,15 +17,15 @@ model Car {
   miles         Int
   price         Int
   image         String
-  features      String[] // ← این باید String[] باشد (آرایه)
+  features      String[] 
   description   String
   make          String
   year          Int
   city          String
   model         String
   listerId      String
-  messages      message[] // پیشنهاد: messages (جمع)
-  // بهتر است اضافه کنید
+  messages      message[] 
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }

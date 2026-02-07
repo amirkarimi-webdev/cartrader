@@ -35,7 +35,6 @@ export default defineEventHandler(
     } catch (error: any) {
       console.error("خطا در حذف آگهی:", error);
 
-      // مدیریت خطاهای رایج Prisma
       if (error.code === "P2025") {
         throw createError({
           statusCode: 404,

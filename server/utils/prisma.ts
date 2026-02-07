@@ -2,10 +2,7 @@
 
 import { PrismaClient } from '@prisma/client'
 
-/**
- * Singleton PrismaClient برای جلوگیری از چندین instance در hot-reload (dev)
- * و مدیریت بهتر connectionها در production
- */
+
 const prismaClientSingleton = () => {
   return new PrismaClient({
     log:

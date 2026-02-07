@@ -1,64 +1,9 @@
-// import cars from "@/data/cars.json";
-// import type { Cars, Car } from "~/types/car";
-
-// export default defineEventHandler((event) => {
-//   const { city } = getRouterParams(event);
-
-//   const query = getQuery(event);
-//   const make = typeof query.make === "string" ? query.make : undefined;
-//   const minPriceStr =
-//     typeof query.minPrice === "string" ? query.minPrice : undefined;
-//   const maxPriceStr =
-//     typeof query.maxPrice === "string" ? query.maxPrice : undefined;
-
-//   const minPrice = minPriceStr ? parseInt(minPriceStr, 10) : undefined;
-//   const maxPrice = maxPriceStr ? parseInt(maxPriceStr, 10) : undefined;
-
-//   if ((minPriceStr && isNaN(minPrice!)) || (maxPriceStr && isNaN(maxPrice!))) {
-//     throw createError({
-//       statusCode: 400,
-//       statusMessage: "minPrice and maxPrice must be valid numbers",
-//     });
-//   }
-
-//   const typedCars: Cars = cars as Cars;
-
-//   let filteredCars = typedCars.filter(
-//     (car) => car.city.toLowerCase() === city.toLowerCase()
-//   );
-
-//   if (make) {
-//     filteredCars = typedCars.filter(
-//       (car) => car.make.toLowerCase() === make.toLowerCase()
-//     );
-//   }
-
-//   if (minPrice !== undefined) {
-//     filteredCars = typedCars.filter((car) => car.price >= minPrice);
-//   }
-
-//   if (maxPrice !== undefined) {
-//     filteredCars = typedCars.filter((car) => car.price <= maxPrice);
-//   }
-//   if (filteredCars.length === 0) {
-//     throw createError({
-//       statusCode: 404,
-//       statusMessage: `No cars found in ${city}`,
-//     });
-//   }
-
-//   return filteredCars;
-// });
-
-// server/api/cars/[city]/car.ts  (یا هر نامی که روت درست بشه)
-// server/api/car/[city].get.ts
 
 // server/api/cars.get.ts
 import { prisma } from '~/server/utils/prisma';
 import { getRouterParams, getQuery } from 'h3';
 import type { H3Event } from 'h3';
 
-// نوع بازگشتی برای خوانایی و تایپینگ بهتر
 type CarListItem = {
   id: number;
   name: string;
@@ -69,11 +14,9 @@ type CarListItem = {
   price: number;
   image: string;
   city: string;
-  // اگر فیلدهای بیشتری select کردی، اینجا اضافه کن
 };
 
 export default defineEventHandler(async (event: H3Event): Promise<CarListItem[]> => {
-  // ۱. گرفتن شهر از path parameter (اجباری)
   const { city } = getRouterParams(event) as { city: string };
 
   if (!city || typeof city !== 'string' || city.trim().length < 2) {
@@ -85,7 +28,6 @@ export default defineEventHandler(async (event: H3Event): Promise<CarListItem[]>
 
   const normalizedCity = city.toLowerCase().trim();
 
-  // ۲. گرفتن فیلترهای اختیاری از query string
   const query = getQuery(event);
 
   const make = typeof query.make === 'string' ? query.make.toLowerCase().trim() : undefined;
@@ -95,7 +37,6 @@ export default defineEventHandler(async (event: H3Event): Promise<CarListItem[]>
   const minPrice = minPriceStr ? Number(minPriceStr) : undefined;
   const maxPrice = maxPriceStr ? Number(maxPriceStr) : undefined;
 
-  // ۳. اعتبارسنجی قیمت‌ها
   if ((minPriceStr && isNaN(minPrice!)) || (maxPriceStr && isNaN(maxPrice!))) {
     throw createError({
       statusCode: 400,
@@ -138,10 +79,10 @@ export default defineEventHandler(async (event: H3Event): Promise<CarListItem[]>
       orderBy: {
         id: 'desc', // جدیدترین آگهی‌ها اول
       },
-      take: 50, // محدودیت برای عملکرد (می‌تونی بعداً pagination اضافه کنی)
+      take: 50, 
     });
 
-    // اگر هیچ آگهی‌ای نبود، 404 برگردون (کاربرپسند)
+
     if (cars.length === 0) {
       throw createError({
         statusCode: 404,
